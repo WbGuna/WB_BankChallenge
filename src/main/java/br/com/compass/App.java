@@ -41,10 +41,10 @@ public class App {
         while (running) {
             System.out.println("========= Main Menu =========");
             System.out.println("|| 1. Login                ||");
-            System.out.println("|| 2. Criar Conta          ||");
+            System.out.println("|| 2. Account Opening          ||");
             System.out.println("|| 0. Exit                 ||");
             System.out.println("=============================");
-            System.out.print("Informe sua opção: ");
+            System.out.print("Choose an option: ");
 
             int option = scanner.nextInt();
             scanner.nextLine(); 
@@ -60,27 +60,28 @@ public class App {
                     running = false;
                     break;
                 default:
-                    System.out.println("Escolha invalida! Tente novamente.");
+                    System.out.println("Invalid option! Please try again");
             }
         }
     }
 
     public static void login(Scanner scanner) {
         System.out.println("===== Login =====");
-        System.out.print("Nome de Usuário: ");
+        
+        System.out.print("Username: ");
         String usuario = scanner.nextLine();
 
-        System.out.print("Senha: ");
+        System.out.print("Password: ");
         String senha = scanner.nextLine();
 
         contaLogada = contaController.buscaPorUsuarioESenha(usuario, senha);
         if (contaLogada != null) {
             skipLines(3);
             System.out.println("Login successful!");
-            System.out.println("Bem vindo, " + contaLogada.getCliente().getNome() + "   -   Conta: " + contaLogada.getTipoConta() + "   -   Número Conta: " + contaLogada.getIdConta());
+            System.out.println("Welcome, " + contaLogada.getCliente().getNome() + "   -   Account: " + contaLogada.getTipoConta() + "   -   Account Number: " + contaLogada.getIdConta());
             bankMenu(scanner);
         } else {
-            System.out.println("Seu 'Nome de Usuário' ou 'Senha' estão invalidos! Tente novamente.");
+            System.out.println("Invalid username or password. Please try again.");
             skipLines(3);
             mainMenu(scanner);
         }
@@ -92,89 +93,90 @@ public class App {
         while (running) {
             skipLines(1);
             System.out.println("========= Bank Menu =========");
-            System.out.println("|| 1. Depositar            ||");
-            System.out.println("|| 2. Sacar                ||");
-            System.out.println("|| 3. Verificar Saldo      ||");
-            System.out.println("|| 4. Transferência        ||");
-            System.out.println("|| 5. Extrado da conta     ||");
+            System.out.println("|| 1. Deposit              ||");
+            System.out.println("|| 2. Withdraw             ||");
+            System.out.println("|| 3. Check Balance        ||");
+            System.out.println("|| 4. Transfer             ||");
+            System.out.println("|| 5. Bank Statement       ||");
             System.out.println("|| 0. Exit                 ||");
             System.out.println("=============================");
-            System.out.print("Informe sua escolha: ");
+            System.out.print("Choose an option ");
 
             int option = scanner.nextInt();
             scanner.nextLine(); 
 
             switch (option) {
-                case 1:
-                    System.out.print("Informe o valor a ser depositado: ");
-                    Double valorDep = scanner.nextDouble();
-                    contaController.depositar(contaLogada.getIdConta(), valorDep);
-                    System.out.println("Deposito efetuado com sucesso!");
-                    break;
-                case 2:
-                    System.out.print("Informe o valor que deseja sacar: ");
-                    Double valorSaq = scanner.nextDouble();
-                    contaController.sacar(contaLogada.getIdConta(), valorSaq);
-                    System.out.println("Saque efetuado com sucesso");
-                    break;
-                case 3:
-                    Double saldo = contaController.consultarSaldo(contaLogada.getIdConta());
-                    System.out.println("Seu saldo atual é: " + saldo);
-                    break;
-                case 4:
-                    System.out.print("Informe o número da conta de destino: ");
-                    Long idContaDestino = scanner.nextLong();
-                    System.out.print("Informe o valor que deseja transferir: ");
-                    Double valorTransf = scanner.nextDouble();
-                    contaController.transferir(contaLogada.getIdConta(), idContaDestino, valorTransf);
-                    System.out.println("Tranferência efetuada com sucesso");
-                    break;
-                case 5:
-                    List<Transacao> extrato = contaController.extratoBancario(contaLogada.getIdConta());
-                    System.out.println("===== Extrato Bancário =====");
-                    for (Transacao transacao : extrato) {
-                        System.out.println("Data/Hora: " + transacao.getDataHora().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
-                        System.out.println("Tipo transação: " + transacao.getTipoTransacao());
-                        System.out.println("Valor: " + transacao.getValor());
-                        System.out.println("---------------------------");
-                    }
-                    break;
-                case 0:
-                    System.out.println("Saindo...");
-                    running = false;
-                    return;
-                default:
-                    System.out.println("Opção Invalida! Tente novamente.");
-            }
+            case 1:
+                System.out.print("Enter the amount to be deposited: ");
+                Double valorDep = scanner.nextDouble();
+                contaController.depositar(contaLogada.getIdConta(), valorDep);
+                System.out.println("Deposit successfully made!");
+                break;
+            case 2:
+                System.out.print("Enter the amount you want to withdraw: ");
+                Double valorSaq = scanner.nextDouble();
+                contaController.sacar(contaLogada.getIdConta(), valorSaq);
+                System.out.println("Withdrawal successfully made!");
+                break;
+            case 3:
+                Double saldo = contaController.consultarSaldo(contaLogada.getIdConta());
+                System.out.println("Your current balance is: " + saldo);
+                break;
+            case 4:
+                System.out.print("Enter the destination account number: ");
+                Long idContaDestino = scanner.nextLong();
+                System.out.print("Enter the amount you want to transfer: ");
+                Double valorTransf = scanner.nextDouble();
+                contaController.transferir(contaLogada.getIdConta(), idContaDestino, valorTransf);
+                System.out.println("Transfer successfully made!");
+                break;
+            case 5:
+                List<Transacao> extrato = contaController.extratoBancario(contaLogada.getIdConta());
+                System.out.println("===== Bank Statement =====");
+                for (Transacao transacao : extrato) {
+                    System.out.println("Date/Time: " + transacao.getDataHora().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
+                    System.out.println("Transaction Type: " + transacao.getTipoTransacao());
+                    System.out.println("Amount: " + transacao.getValor());
+                    System.out.println("---------------------------");
+                }
+                break;
+            case 0:
+                System.out.println("Exiting...");
+                running = false;
+                return;
+            default:
+                System.out.println("Invalid option! Please try again.");
+        }
+
         }
     }
 
     private static void abrirConta(Scanner scanner) {
-        System.out.println("===== Abertura de conta =====");
+        System.out.println("===== Account Opening =====");
 
         // Cliente
         Cliente cliente = new Cliente();
-        System.out.print("Seu nome completo: ");
-        cliente.setNome(validarEntrada(scanner, "Seu nome não pode ser vazio.", input -> input.matches("^[\\p{L} .'-]+$")));
+        System.out.print("Your full name: ");
+        cliente.setNome(validarEntrada(scanner, "Your name cannot be empty.", input -> input.matches("^[\\p{L} .'-]+$")));
 
-        System.out.print("Informe sua data de nascimento no formato exemplificado (DD-MM-YYYY): ");
+        System.out.print("Enter your date of birth in the format (DD-MM-YYYY): ");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        cliente.setDataNascimento(validarData(scanner, "Formato da data invalido. Please use DD-MM-YYYY.", formatter));
+        cliente.setDataNascimento(validarData(scanner, "Invalid date format. Please use DD-MM-YYYY.", formatter));
 
         System.out.print("CPF or CNPJ: ");
-        cliente.setCpf(validarEntrada(scanner, "Formato do CPF/CNPJ invalido. Inserir um valor valido", input -> input.matches("\\d{11}") || input.matches("\\d{14}")));
+        cliente.setCpf(validarEntrada(scanner, "Invalid CPF/CNPJ format. Please enter a valid value.", input -> input.matches("\\d{11}") || input.matches("\\d{14}")));
 
-        System.out.print("Telefone: ");
-        cliente.setTelefone(validarEntrada(scanner, "Informe um valor valido", input -> input.matches("\\d{10,11}")));
+        System.out.print("Phone: ");
+        cliente.setTelefone(validarEntrada(scanner, "Please enter a valid value.", input -> input.matches("\\d{10,11}")));
 
         System.out.print("Email: ");
-        cliente.setEmail(validarEntrada(scanner, "Informe um valor valido", input -> input.contains("@")));
+        cliente.setEmail(validarEntrada(scanner, "Please enter a valid value.", input -> input.contains("@")));
 
         try {
             clienteController.novoCliente(cliente);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            return; 
+            return;
         }
 
         // Tipo de conta
@@ -197,16 +199,16 @@ public class App {
                 tipoConta = TipoConta.CONTA_SALARIO;
                 break;
             default:
-                System.out.println("Sua escolha foi invalida a conta padrão gerada é CONTA CORRENTE");
+                System.out.println("Invalid choice, the default account type generated is CONTA_CORRENTE.");
                 tipoConta = TipoConta.CONTA_CORRENTE;
         }
 
         // Conta para cliente
         Conta conta = new Conta();
         conta.setTipoConta(tipoConta);
-        System.out.print("Nome de usuário para sua conta: ");
+        System.out.print("Username for your account: ");
         conta.setUsuario(scanner.nextLine());
-        System.out.print("Senha da sua conta: ");
+        System.out.print("Password for your account: ");
         conta.setSenha(scanner.nextLine());
         conta.setCliente(cliente);
 
@@ -214,13 +216,11 @@ public class App {
             contaController.novaConta(conta);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            return; 
+            return;
         }
 
-        System.out.println("Sua conta foi criada com sucesso");
+        System.out.println("Your account has been successfully created.");
     }
-
-    
 
     private static String validarEntrada(Scanner scanner, String mensagemErro, java.util.function.Predicate<String> validacao) {
         while (true) {
