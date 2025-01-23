@@ -28,3 +28,19 @@ replay_pid*
 
 # Target folder
 /target
+
+# Eclipse specific files
+.settings/
+.metadata/
+.recommenders/
+.apt_generated/
+.autotest/
+.classpath
+.factorypath
+.project
+.cproject
+.cxx_test/
+.buildpath
+.pmd/
+.checkstyle/
+.idea/
