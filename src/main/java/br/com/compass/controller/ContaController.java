@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.com.compass.model.Cliente;
 import br.com.compass.model.Conta;
+import br.com.compass.model.Transacao;
 import br.com.compass.service.ContaService;
 
 public class ContaController {
@@ -24,30 +25,50 @@ public class ContaController {
     }
     
     public void novaConta(Conta conta) {
-        contaService.novaConta(conta);
+        if (!contaService.usuarioExists(conta.getUsuario())) {
+            contaService.novaConta(conta);
+        } else {
+            throw new IllegalArgumentException("Username already exists.");
+        }
     }
 
     public Conta buscaPorId(Long id) {
         return contaService.buscaPorId(id);
     }
 
-    public List<Conta> buscaTodos() {
-        return contaService.buscaTodos();
-    }
-
     public void update(Conta conta) {
         contaService.update(conta);
     }
-
-    public void delete(Long id) {
-        contaService.delete(id);
-    }
-    
+  
     public Conta buscaContaPorCliente(Cliente cliente) {
         return contaService.buscaContaPorCliente(cliente);
     }
     
     public Conta buscaPorUsuarioESenha(String usuario, String senha) {
         return contaService.buscaPorUsuarioESenha(usuario, senha);
+    }
+    
+    public void depositar(Long idConta, Double valor) {
+        contaService.depositar(idConta, valor);
+    }
+
+    public void sacar(Long idConta, Double valor) {
+        contaService.sacar(idConta, valor);
+    }
+
+    public Double consultarSaldo(Long idConta) {
+        return contaService.consultarSaldo(idConta);
+    }
+
+    public void transferir(Long idContaOrigem, Long idContaDestino, Double valor) {
+        contaService.transferir(idContaOrigem, idContaDestino, valor);
+    }
+
+    public List<Transacao> extratoBancario(Long idConta) {
+        return contaService.extratoBancario(idConta);
+    }
+    
+    public boolean usuarioExists(String usuario) {
+        return contaService.usuarioExists(usuario);
     }
 }

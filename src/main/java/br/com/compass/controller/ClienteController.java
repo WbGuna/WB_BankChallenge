@@ -1,7 +1,6 @@
 package br.com.compass.controller;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import br.com.compass.model.Cliente;
 import br.com.compass.service.ClienteService;
@@ -25,22 +24,26 @@ public class ClienteController {
     }
     
     public void novoCliente(Cliente cliente) {
-        clienteService.novoCliente(cliente);
+        if (!clienteService.emailExists(cliente.getEmail())) {
+            if (!clienteService.cpfExists(cliente.getCpf())) {
+                clienteService.novoCliente(cliente);
+            } else {
+                throw new IllegalArgumentException("CPF already exists.");
+            }
+        } else {
+            throw new IllegalArgumentException("Email already exists.");
+        }
     }
 
     public Cliente buscaPorId(Long id) {
         return clienteService.buscaPorId(id);
     }
-
-    public List<Cliente> buscaTodos() {
-        return clienteService.buscaTodos();
+    
+    public boolean emailExists(String email) {
+        return clienteService.emailExists(email);
     }
 
-    public void update(Cliente cliente) {
-        clienteService.update(cliente);
-    }
-
-    public void delete(Long id) {
-        clienteService.delete(id);
+    public boolean cpfExists(String cpf) {
+        return clienteService.cpfExists(cpf);
     }
 }

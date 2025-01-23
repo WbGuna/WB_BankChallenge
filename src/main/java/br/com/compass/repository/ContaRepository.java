@@ -8,6 +8,7 @@ import javax.persistence.NoResultException;
 
 import br.com.compass.model.Cliente;
 import br.com.compass.model.Conta;
+import br.com.compass.model.Transacao;
 import br.com.compass.util.EntityManagerUtil;
 
 public class ContaRepository {
@@ -44,10 +45,6 @@ public class ContaRepository {
         return entityManager.find(Conta.class, id);
     }
 
-    public List<Conta> buscaTodos() {
-        return entityManager.createQuery("FROM Conta", Conta.class).getResultList();
-    }
-
     public void update(Conta conta) {
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -61,24 +58,7 @@ public class ContaRepository {
             throw e;
         }
     }
-
-    public void delete(Long id) {
-        EntityTransaction transaction = entityManager.getTransaction();
-        try {
-            transaction.begin();
-            Conta conta = entityManager.find(Conta.class, id);
-            if (conta != null) {
-                entityManager.remove(conta);
-            }
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw e;
-        }
-    }
-    
+  
     public Conta buscaContaPorCliente(Cliente cliente) {
         try {
             return entityManager.createQuery("SELECT c FROM Conta c WHERE c.cliente = :cliente", Conta.class)
@@ -98,5 +78,32 @@ public class ContaRepository {
         } catch (NoResultException e) {
             return null;
         }
+    }
+    
+    public void registrarTransacao(Transacao transacao) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.persist(transacao);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw e;
+        }
+    }
+
+    public List<Transacao> buscaTransacoesPorConta(Long idConta) {
+        return entityManager.createQuery("SELECT t FROM Transacao t WHERE t.conta.idConta = :idConta ORDER BY t.dataHora DESC", Transacao.class)
+            .setParameter("idConta", idConta)
+            .getResultList();
+    }
+    
+    public boolean usuarioExists(String usuario) {
+        Long count = entityManager.createQuery("SELECT COUNT(c) FROM Conta c WHERE c.usuario = :usuario", Long.class)
+                                  .setParameter("usuario", usuario)
+                                  .getSingleResult();
+        return count > 0;
     }
 }

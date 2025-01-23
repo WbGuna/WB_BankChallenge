@@ -1,7 +1,6 @@
 package br.com.compass.service;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import br.com.compass.model.Cliente;
 import br.com.compass.repository.ClienteRepository;
@@ -31,16 +30,12 @@ public class ClienteService {
     public Cliente buscaPorId(Long id) {
         return clienteRepository.buscaPorId(id);
     }
-
-    public List<Cliente> buscaTodos() {
-        return clienteRepository.buscaTodos();
+    
+    public boolean emailExists(String email) {
+        return clienteRepository.emailExists(email);
     }
 
-    public void update(Cliente cliente) {
-        clienteRepository.update(cliente);
-    }
-
-    public void delete(Long id) {
-        clienteRepository.delete(id);
+    public boolean cpfExists(String cpf) {
+        return clienteRepository.cpfExists(cpf);
     }
 }
