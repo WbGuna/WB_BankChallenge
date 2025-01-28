@@ -10,6 +10,7 @@ import br.com.compass.model.Cliente;
 import br.com.compass.model.Conta;
 import br.com.compass.model.Transacao;
 import br.com.compass.util.EntityManagerUtil;
+import br.com.compass.util.SenhaUtils;
 
 public class ContaRepository {
 
@@ -71,14 +72,19 @@ public class ContaRepository {
     
     public Conta buscaPorUsuarioESenha(String usuario, String senha) {
         try {
-            return entityManager.createQuery("SELECT c FROM Conta c WHERE c.usuario = :usuario AND c.senha = :senha", Conta.class)
+            Conta conta = entityManager.createQuery("SELECT c FROM Conta c WHERE c.usuario = :usuario", Conta.class)
                 .setParameter("usuario", usuario)
-                .setParameter("senha", senha)
                 .getSingleResult();
+            if (SenhaUtils.validarSenha(senha, conta.getSenha())) {
+                return conta;
+            } else {
+                return null;
+            }
         } catch (NoResultException e) {
             return null;
         }
     }
+
     
     public void registrarTransacao(Transacao transacao) {
         EntityTransaction transaction = entityManager.getTransaction();

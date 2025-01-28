@@ -51,7 +51,7 @@ public class ContaService {
             conta.setSaldo(conta.getSaldo() + valor);
             update(conta);
 
-            Transacao transacao = new Transacao(conta, "Deposito", valor, LocalDateTime.now());
+            Transacao transacao = new Transacao(conta, "Deposit", valor, LocalDateTime.now());
             contaRepository.registrarTransacao(transacao);
             System.out.println("Deposit successful!");
         } else {
@@ -66,14 +66,14 @@ public class ContaService {
                 conta.setSaldo(conta.getSaldo() - valor);
                 update(conta);
 
-                Transacao transacao = new Transacao(conta, "Saque", valor, LocalDateTime.now());
+                Transacao transacao = new Transacao(conta, "Withdraw", valor, LocalDateTime.now());
                 contaRepository.registrarTransacao(transacao);
                 System.out.println("Withdraw successful!");
             } else {
-                System.out.println("Saldo insuficiente.");
+                System.out.println("Account not found.");
             }
         } else {
-            System.out.println("Account not found.");
+            System.out.println("Non-existent account.");
         }
     }
 
@@ -87,16 +87,16 @@ public class ContaService {
                 update(contaOrigem);
                 update(contaDestino);
 
-                Transacao transacaoOrigem = new Transacao(contaOrigem, "Transferencia Enviada para conta: " + idContaDestino.toString(), valor, LocalDateTime.now());
-                Transacao transacaoDestino = new Transacao(contaDestino, "Transferencia Recebida de conta: " + idContaOrigem.toString(), valor, LocalDateTime.now());
+                Transacao transacaoOrigem = new Transacao(contaOrigem, "Transfer Sent to Account: " + idContaDestino.toString(), valor, LocalDateTime.now());
+                Transacao transacaoDestino = new Transacao(contaDestino, "Transfer Received from Account: " + idContaOrigem.toString(), valor, LocalDateTime.now());
                 contaRepository.registrarTransacao(transacaoOrigem);
                 contaRepository.registrarTransacao(transacaoDestino);
                 System.out.println("Transfer successful!");
             } else {
-                System.out.println("Saldo insuficiente.");
+                System.out.println("Account not found.");
             }
         } else {
-            System.out.println("Uma ou ambas as contas não foram encontradas.");
+            System.out.println("One or both accounts were not found.");
         }
     }
 

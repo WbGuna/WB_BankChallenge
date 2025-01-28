@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import br.com.compass.enuns.TipoConta;
+import br.com.compass.util.SenhaUtils;
 
 @Entity
 @Table(name = "tb_conta")
@@ -35,7 +36,7 @@ public class Conta implements Serializable {
     @Column(name = "usuario", length = 30, nullable = false, unique = true)
     private String usuario;
     
-    @Column(name = "senha", length = 14, nullable = false)
+    @Column(name = "senha", length = 86, nullable = false)
     private String senha;
     
     @ManyToOne
@@ -82,7 +83,7 @@ public class Conta implements Serializable {
 	}
 
 	public void setSenha(String senha) {
-		this.senha = senha;
+		this.senha = SenhaUtils.criptografarSenha(senha);
 	}
 
 	public Cliente getCliente() {
