@@ -4,8 +4,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 import br.com.compass.controller.ClienteController;
 import br.com.compass.controller.ContaController;
@@ -41,10 +43,17 @@ public class App {
         while (running) {
             System.out.println("========= Main Menu =========");
             System.out.println("|| 1. Login                ||");
-            System.out.println("|| 2. Account Opening          ||");
+            System.out.println("|| 2. Account Opening      ||");
             System.out.println("|| 0. Exit                 ||");
             System.out.println("=============================");
             System.out.print("Choose an option: ");
+            
+            if (!scanner.hasNextInt()) {
+                System.out.println("Please enter a valid number!");
+                skipLines(3);
+                scanner.next(); 
+                continue; 
+            }
 
             int option = scanner.nextInt();
             scanner.nextLine(); 
@@ -100,7 +109,14 @@ public class App {
             System.out.println("|| 5. Bank Statement       ||");
             System.out.println("|| 0. Exit                 ||");
             System.out.println("=============================");
-            System.out.print("Choose an option ");
+            System.out.print("Choose an option: ");
+            
+            if (!scanner.hasNextInt()) {
+                System.out.println("Please enter a valid number!");
+                skipLines(3);
+                scanner.next(); 
+                continue; 
+            }
 
             int option = scanner.nextInt();
             scanner.nextLine(); 
@@ -142,6 +158,7 @@ public class App {
                 break;
             case 0:
                 System.out.println("Exiting...");
+                skipLines(3);
                 running = false;
                 return;
             default:
@@ -178,32 +195,11 @@ public class App {
             System.out.println(e.getMessage());
             return;
         }
-
+        
         // Tipo de conta
-        System.out.println("Account Type:");
-        System.out.println("1. CONTA_CORRENTE");
-        System.out.println("2. CONTA_POUPANCA");
-        System.out.println("3. CONTA_SALARIO");
-        System.out.print("Choose an option: ");
-        int tipoContaOption = scanner.nextInt();
-        scanner.nextLine();
-        TipoConta tipoConta;
-        switch (tipoContaOption) {
-            case 1:
-                tipoConta = TipoConta.CONTA_CORRENTE;
-                break;
-            case 2:
-                tipoConta = TipoConta.CONTA_POUPANCA;
-                break;
-            case 3:
-                tipoConta = TipoConta.CONTA_SALARIO;
-                break;
-            default:
-                System.out.println("Invalid choice, the default account type generated is CONTA_CORRENTE.");
-                tipoConta = TipoConta.CONTA_CORRENTE;
-        }
-
-        // Conta para cliente
+        TipoConta tipoConta = escolherTipoConta(scanner);
+        
+        // Conta 
         Conta conta = new Conta();
         conta.setTipoConta(tipoConta);
         System.out.print("Username for your account: ");
@@ -221,16 +217,51 @@ public class App {
 
         System.out.println("Your account has been successfully created.");
     }
+    
+    private static TipoConta escolherTipoConta(Scanner scanner) {
+        System.out.println("Account Type:");
+        System.out.println("1. CONTA_CORRENTE");
+        System.out.println("2. CONTA_POUPANCA");
+        System.out.println("3. CONTA_SALARIO");
 
-    private static String validarEntrada(Scanner scanner, String mensagemErro, java.util.function.Predicate<String> validacao) {
         while (true) {
-            String entrada = scanner.nextLine();
-            if (validacao.test(entrada)) {
-                return entrada;
-            } else {
-                System.out.println(mensagemErro);
+            System.out.print("Choose an option: ");
+            
+            try {
+                int tipoContaOption = scanner.nextInt();
+                scanner.nextLine();
+                
+                switch (tipoContaOption) {
+                    case 1:
+                        return TipoConta.CONTA_CORRENTE;
+                    case 2:
+                        return TipoConta.CONTA_POUPANCA;
+                    case 3:
+                        return TipoConta.CONTA_SALARIO;
+                    default:
+                        System.out.println("Invalid choice, the default account type generated is CONTA_CORRENTE.");
+                        return TipoConta.CONTA_CORRENTE;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Enter the correct value.");
+                scanner.next(); 
             }
         }
+    }
+
+
+    public static String validarEntrada(Scanner scanner, String mensagemErro, Predicate<String> validacao) {
+        String entrada;
+        while (true) {
+            entrada = scanner.nextLine();
+            if (validacao.test(entrada)) {
+                break;
+            } else {
+                System.out.println(mensagemErro);
+                System.out.print("Enter the correct value: ");
+            }
+        }
+        return entrada;
     }
 
     private static LocalDate validarData(Scanner scanner, String mensagemErro, DateTimeFormatter formatter) {
@@ -239,6 +270,7 @@ public class App {
                 return LocalDate.parse(scanner.nextLine(), formatter);
             } catch (DateTimeParseException e) {
                 System.out.println(mensagemErro);
+                System.out.print("Enter a date in the format (12-01-2025): ");
             }
         }
     }
